@@ -4,6 +4,8 @@ import pygame
 from Classes import *
 pygame.init()
 
+# This is a comment to demonstrate git
+
 # game components
 gameHeight = 600
 gameWidth = 800
