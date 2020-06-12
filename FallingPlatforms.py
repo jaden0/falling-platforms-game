@@ -62,6 +62,7 @@ while run:
         player.vel_x = 0
         player.platform = None
         player.hitbox[0] = int(game.width/2 - player.hitbox[2]/2)
+        print( "you die" )
         player.life -= 1
         game.dieSound.play()
 

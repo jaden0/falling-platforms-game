@@ -269,9 +269,9 @@ class Platform(object):
         self.tileWidth = 0
 
     def draw(self, win):
+        pygame.draw.rect(win, self.color, (self.hitbox[0]+self.imagePadding,self.hitbox[1]-2,self.hitbox[2]-2*self.imagePadding,10), 0)
         for i in range(0,self.numberTilesWide):
             win.blit(self.tileImages[i], (self.hitbox[0]-self.imagePadding + i*self.tileWidth, self.hitbox[1]-12))
-        #pygame.draw.rect(win, self.color, self.hitbox, 1)
         #win.blit(self.text, (self.hitbox[0]+self.hitbox[2]-10, self.hitbox[1]-12))
         for coin in self.coins:
             coin.draw(win)
@@ -322,7 +322,7 @@ class PlatformFactory(object):
         topPlatform = game.platforms[len(game.platforms)-1]
         if aPlatform.hitbox[0] + aPlatform.hitbox[2] < topPlatform.hitbox[0] + topPlatform.hitbox[2] - 10 or aPlatform.hitbox[0] > topPlatform.hitbox[0] + 10:
             dMin = player.jump_velocity * player.max_vel_x / game.gravity
-            dMax = 2 * dMin
+            dMax = 2 * dMin - 30
             distance1 = topPlatform.hitbox[0] - ( aPlatform.hitbox[0] + aPlatform.hitbox[2] )
             distance2 = aPlatform.hitbox[0] - (topPlatform.hitbox[0] + topPlatform.hitbox[2])
             distance = max( dMin, distance1, distance2)
