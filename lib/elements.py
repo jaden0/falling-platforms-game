@@ -10,11 +10,14 @@ class Player(object):
         width = 36
         height = 54
         self.runRight = []
+        self.facing = "left"
         self.runLeft = []
         self.idleRight = []
         self.idleLeft = []
         self.jumpRight = []
         self.jumpLeft = []
+        self.jetLeft = []
+        self.jetRight = []
         self.score = 0
         self.vel_x = 0
         self.vel_y = 0
@@ -35,6 +38,11 @@ class Player(object):
         self.drawbox = [0,0,0,0] 
         paddedWidth = width + self.padding[1] + self.padding[2]
         paddedHeight = height + self.padding[0] + self.padding[3]
+        rotAngle = 12
+        self.jetpackImage=[pygame.transform.scale(pygame.image.load("images/items/OffJetpack.png"),(int(width*.9),int(height*.9)))]
+        self.jetpackImage.append(pygame.transform.flip( self.jetpackImage[0], True, False) )
+        self.jetpackImage.append(pygame.transform.rotate(pygame.transform.scale(pygame.image.load("images/items/Jetpack.png"),(int(width*.9),int(height*.9))),rotAngle) )
+        self.jetpackImage.append(pygame.transform.flip(self.jetpackImage[2],True,False) )
         for i in range(1,11):
             self.runRight.append(pygame.transform.scale(pygame.image.load("images/character/png/Run (%d).png" % i), (paddedWidth, paddedHeight)) )
             self.runLeft.append(pygame.transform.scale(pygame.transform.flip( pygame.image.load("images/character/png/Run (%d).png" % i ), True, False  ), (paddedWidth,paddedHeight) ) )
@@ -42,10 +50,17 @@ class Player(object):
             self.jumpRight.append(pygame.transform.scale(pygame.image.load("images/character/png/Jump (%d).png" % i), (paddedWidth, paddedHeight)) )
             self.jumpLeft.append(pygame.transform.scale(pygame.transform.flip( pygame.image.load("images/character/png/Jump (%d).png" % i ), True, False  ), (paddedWidth,paddedHeight) ) )
             self.idleLeft.append(pygame.transform.scale(pygame.transform.flip( pygame.image.load("images/character/png/Idle (%d).png" % i ), True, False  ), (paddedWidth,paddedHeight) ) )
+            self.jetRight.append(pygame.transform.rotate(self.jumpRight[i-1],-rotAngle))
+            self.jetLeft.append(pygame.transform.rotate(self.jumpLeft[i-1],rotAngle ))
+
     def setState(self, state):
         if self.state != state:
             self.state = state
             self.animationStep = 0
+            if self.state % 2 == 0:
+                self.facing = "right"
+            else:
+                self.facing = "left"
         
     def move(self, game):
         # left and right
@@ -108,6 +123,15 @@ class Player(object):
             self.jetpack_fuel -= 1
             if self.jetpack_fuel == 0:
                 self.using_jetpack = False
+            if self.vel_x < 0:
+                self.setState(7)
+            elif self.vel_x > 0:
+                self.setState(6)
+            else:
+                if self.state == 5:
+                    self.setState(7)
+                elif self.state == 4:
+                    self.setState(6)
         else:
             game.jetpackSound.stop()
 
@@ -120,6 +144,18 @@ class Player(object):
                     self.vel_y = 0
                     self.platform = platform
                     self.friction = platform.friction
+                    if self.vel_x < 0:
+                        self.setState(1)
+                    elif self.vel_x > 0:
+                        self.setState(0)
+                    else:
+                        if self.facing == "left":
+                            self.setState(5)
+                        else:
+                            self.setState(4)
+
+                    
+
 
 
                 if bump( self, platform):
@@ -182,7 +218,17 @@ class Player(object):
         if self.state in (1,3,5):
             self.drawbox[0] -= leftShift
         if self.using_jetpack:
-            pygame.draw.rect(win, (255,40,0), self.hitbox) # TODO: draw the jetpack here
+            if self.state in range(0,6):
+                if self.facing == "left":
+                    win.blit( self.jetpackImage[0], (int(self.drawbox[0]+37),self.drawbox[1]+20))
+                else:
+                    win.blit( self.jetpackImage[1], (self.drawbox[0],self.drawbox[1]+20))
+            else:
+                if self.facing == "left":
+                    win.blit( self.jetpackImage[2], (self.drawbox[0]+37,self.drawbox[1]+15))
+                else:
+                    win.blit( self.jetpackImage[3], (self.drawbox[0],self.drawbox[1]+15))
+#            pygame.draw.rect(win, (255,40,0), self.hitbox) # TODO: draw the jetpack here
         if self.state == 0:
             win.blit(self.runRight[self.animationStep // self.framesPerPic], self.drawbox)
         elif self.state == 1:
@@ -195,6 +241,10 @@ class Player(object):
             win.blit(self.idleRight[self.animationStep // self.framesPerPic], self.drawbox)
         elif self.state == 5:
             win.blit(self.idleLeft[self.animationStep // self.framesPerPic], self.drawbox)
+        elif self.state == 6: # flying right with jetpack
+            win.blit(self.jetRight[self.animationStep // self.framesPerPic], self.drawbox)
+        elif self.state == 7: # flying left with jetpack
+            win.blit(self.jetLeft[self.animationStep // self.framesPerPic], self.drawbox)
         self.animationStep += 1
         if self.animationStep == self.framesPerPic * 10:
             self.animationStep = 0
@@ -256,7 +306,7 @@ class PlatformFactory(object):
                 for iCoin in range(0,random.randint(0,3)):
                     aCoin = self.itemFactory.makeCoin(random.randint(aPlatform.hitbox[0], aPlatform.hitbox[0]+aPlatform.hitbox[2]), aPlatform.hitbox[1]-8) 
                     aPlatform.coins.append( aCoin )
-                if random.random() < .06:
+                if random.random() < .05:
                     aJetpack = self.itemFactory.makeJetpack(random.randint(aPlatform.hitbox[0], aPlatform.hitbox[0]+aPlatform.hitbox[2]), aPlatform.hitbox[1]-20)
                     aPlatform.jetpacks.append( aJetpack )
                     game.greatLeaps += 1

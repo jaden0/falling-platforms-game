@@ -55,14 +55,15 @@ while run:
     if topPlatformY > 10:
         factory.addPlatform( game, player )
 
-   # development mode
-    if player.hitbox[1] > 1000:
-        player.hitbox[1] = -50
+    # die
+    if player.hitbox[1] > game.height:
+        player.hitbox[1] = -5000
         player.vel_y = 0
         player.vel_x = 0
         player.platform = None
         player.hitbox[0] = int(game.width/2 - player.hitbox[2]/2)
         player.life -= 1
+        game.dieSound.play()
 
 
     if player.life > 0:

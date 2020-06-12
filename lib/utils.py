@@ -1,5 +1,5 @@
 import pygame
-
+from numpy import sqrt
 
 class Game(object):
     def __init__(self):
@@ -7,6 +7,7 @@ class Game(object):
         self.jumpSound = pygame.mixer.Sound("sounds/jump.wav")
         self.landSound = pygame.mixer.Sound("sounds/land.wav")
         self.bumpSound = pygame.mixer.Sound("sounds/bump.wav")
+        self.dieSound  = pygame.mixer.Sound("sounds/burn.wav")
         self.jetpackSound = pygame.mixer.Sound("sounds/jetpack.wav")
         self.width=500
         self.height=500
@@ -141,3 +142,4 @@ class LavaBackground(object):
         for i in range( 0, self.tilesPerWidth):
             x = i * self.tileSize
             win.blit( self.bottomlavaImages[self.imageNumber], (x,y))
+
