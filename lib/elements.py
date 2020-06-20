@@ -30,7 +30,7 @@ class Player(object):
         self.score = 0
         self.jetpacks = 0
         self.using_jetpack = False
-        self.life = 3
+        self.life = 5
         self.state = 4 # 0: runRight, 1: runLeft, 2: jumpRight, 3:jumpLeft 4:idleRight 5: idleLeft
         self.animationStep = 0
         self.framesPerPic = 3
@@ -198,7 +198,7 @@ class Player(object):
     def getItem(self,item,game):
         if inBox( item.touchpoint, self.hitbox):
             if type(item) is Coin:
-                self.score += 1
+                self.score += random.randint(1,1)
                 game.coinSound.play()
                 return( True )
             elif type( item) is Jetpack:
@@ -303,7 +303,7 @@ class PlatformFactory(object):
             aPlatform = self.suggestPlatform( game )
             if self.isPlatformJumpable( aPlatform, game, player) or not mustBeJumpable:
                 goodPlatform = True
-                for iCoin in range(0,random.randint(0,3)):
+                for iCoin in range(5,10):
                     aCoin = self.itemFactory.makeCoin(random.randint(aPlatform.hitbox[0], aPlatform.hitbox[0]+aPlatform.hitbox[2]), aPlatform.hitbox[1]-8) 
                     aPlatform.coins.append( aCoin )
                 if random.random() < .05:
@@ -353,16 +353,12 @@ class PlatformFactory(object):
         height = 10
         stickyColor = (112,227,73)
         slipperyColor = (151,212,245)
-        mediumColor = (237, 132, 12)
         if random.random() < .2:
             color = slipperyColor
             friction = .3
-        elif random.random() > .5:
+        else:
             color = stickyColor
             friction = 5
-        else:
-            color = mediumColor 
-            friction = 2
         aPlatform = Platform(x, y,width, height, color ,friction, self.id)
         aPlatform.numberTilesWide = numberTiles
         aPlatform.tileImages.append(self.tileImages[28])

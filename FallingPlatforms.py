@@ -56,8 +56,8 @@ while run:
         factory.addPlatform( game, player )
 
     # die
-    if player.hitbox[1] > game.height:
-        player.hitbox[1] = -5000
+    if player.hitbox[1] > game.height- 10:
+        player.hitbox[1] = -500
         player.vel_y = 0
         player.vel_x = 0
         player.platform = None
