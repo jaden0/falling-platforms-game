@@ -303,10 +303,10 @@ class PlatformFactory(object):
             aPlatform = self.suggestPlatform( game )
             if self.isPlatformJumpable( aPlatform, game, player) or not mustBeJumpable:
                 goodPlatform = True
-                for iCoin in range(5,10):
+                for iCoin in range(0,random.randint(0,7)):
                     aCoin = self.itemFactory.makeCoin(random.randint(aPlatform.hitbox[0], aPlatform.hitbox[0]+aPlatform.hitbox[2]), aPlatform.hitbox[1]-8) 
                     aPlatform.coins.append( aCoin )
-                if random.random() < .05:
+                if random.random() < .07:
                     aJetpack = self.itemFactory.makeJetpack(random.randint(aPlatform.hitbox[0], aPlatform.hitbox[0]+aPlatform.hitbox[2]), aPlatform.hitbox[1]-20)
                     aPlatform.jetpacks.append( aJetpack )
                     game.greatLeaps += 1
@@ -322,17 +322,21 @@ class PlatformFactory(object):
         topPlatform = game.platforms[len(game.platforms)-1]
         if aPlatform.hitbox[0] + aPlatform.hitbox[2] < topPlatform.hitbox[0] + topPlatform.hitbox[2] - 10 or aPlatform.hitbox[0] > topPlatform.hitbox[0] + 10:
             dMin = player.jump_velocity * player.max_vel_x / game.gravity
-            dMax = 2 * dMin - 30
+            dMax = 2 * dMin 
             distance1 = topPlatform.hitbox[0] - ( aPlatform.hitbox[0] + aPlatform.hitbox[2] )
             distance2 = aPlatform.hitbox[0] - (topPlatform.hitbox[0] + topPlatform.hitbox[2])
             distance = max( dMin, distance1, distance2)
             if (distance > dMax):
                 canJump = False
                 print( "Too far!" )
-            maxHeight = player.jump_velocity * distance / player.max_vel_x - game.gravity / 2 * (distance / player.max_vel_x) ** 2
-            if( aPlatform.hitbox[1] - topPlatform.hitbox[1] > maxHeight):
+            maxHeight = player.jump_velocity * distance / player.max_vel_x - game.gravity / 2 * (distance / player.max_vel_x) ** 2 
+            print( maxHeight)
+            if topPlatform.hitbox[1] - aPlatform.hitbox[1] > maxHeight:
                 canJump = False
                 print( "Too high!")
+            if aPlatform.hitbox[0] < player.hitbox[2] + 10 or aPlatform.hitbox[0] + aPlatform.hitbox[2] > game.width - player.hitbox[2] - 10: #platform too close to edge
+                print( "Too close to edge")
+                canJump = False
         else:
             canJump = False 
         return( canJump )
